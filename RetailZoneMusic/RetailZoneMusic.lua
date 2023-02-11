@@ -8,7 +8,7 @@ local zoneid_music_map =
 {
 [1519] =
 {
-{"",66.855}, -- "sound\\music\\citymusic\\stormwind\\stormwind_intro-moment.mp3"
+[0]={"",66.855}, -- "sound\\music\\citymusic\\stormwind\\stormwind_intro-moment.mp3"
 {"sound\\music\\citymusic\\stormwind\\stormwind_highseas-moment.mp3",133.174},
 {"sound\\music\\citymusic\\stormwind\\stormwind01-moment.mp3",54.911},
 {"sound\\music\\citymusic\\stormwind\\stormwind02-moment.mp3",35.658},
@@ -52,7 +52,7 @@ local zoneid_music_map =
 },
 [1637] =
 {
-{"",40.288}, --sound\\music\\citymusic\\orgrimmar\\orgrimmar_intro-moment.mp3
+[0]={"",40.288}, --sound\\music\\citymusic\\orgrimmar\\orgrimmar_intro-moment.mp3
 {"sound\\music\\citymusic\\orgrimmar\\orgrimmar01-moment.mp3",68.991},
 {"sound\\music\\citymusic\\orgrimmar\\orgrimmar01-zone.mp3",68.943},
 {"sound\\music\\citymusic\\orgrimmar\\orgrimmar02-moment.mp3",62.386},
@@ -207,7 +207,7 @@ function RetailZoneMusic:ZONE_CHANGED_COMMON(prepareentry)
 	self:StopRetailZoneMusic()
 end
 
-function RetailZoneMusic:ZONE_CHANGED_NEW_AREA(event)
+function RetailZoneMusic:ZONE_CHANGED_NEW_AREA()
 	self:ZONE_CHANGED_COMMON(true)
 end
 
