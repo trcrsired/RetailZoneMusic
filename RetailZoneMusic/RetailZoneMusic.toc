@@ -1,0 +1,6 @@
+## Interface: 11200
+## Title: Retail Zone Music
+## Notes: Play Retail Zone Music in Vanilla
+## Author: cqwrteur
+## Version: 1
+RetailZoneMusic.lua
