@@ -19,6 +19,10 @@ local zoneid_music_map =
 {"sound\\music\\citymusic\\stormwind\\stormwind06-zone.mp3",53.761},
 {"sound\\music\\citymusic\\stormwind\\stormwind07-zone.mp3",87.094},
 {"sound\\music\\citymusic\\stormwind\\stormwind08-zone.mp3",77.369},
+{"sound\\music\\musical moments\\sacred\\sacred02.mp3",19.154}, -- Cathedral Square
+{"sound\\music\\citymusic\\darnassus\\darnassus walking 1.mp3",85.075}, -- The Park
+{"sound\\music\\citymusic\\darnassus\\darnassus walking 2.mp3",69.558},
+{"sound\\music\\citymusic\\darnassus\\darnassus walking 3.mp3",67.703},
 {"sound\\music\\cataclysm\\mus_stormwind_gu01.mp3",73.262},
 {"sound\\music\\cataclysm\\mus_stormwind_gu02.mp3",38.342},
 {"sound\\music\\cataclysm\\mus_stormwind_gu03.mp3",116.342},
@@ -88,7 +92,7 @@ local zoneid_music_map =
 
 local zone_tb_map_enus =
 {
-["Stormwind City"] = {1519,{["The Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45}},
+["Stormwind City"] = {1519,{["The Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["The Slaughtered Lamb"]=true}},
 ["Orgrimmar"] = {1637},
 }
 
@@ -149,8 +153,8 @@ function RetailZoneMusic:ScheduleASong(zi)
 		self.timer = nil
 	end
 	local duration = zi[2]
-	if duration > 2 then
-		duration = duration - 2
+	if duration > 3 then
+		duration = duration - 3
 	else
 		duration = 0
 	end
@@ -170,6 +174,10 @@ function RetailZoneMusic:PlayZoneMainRecursive()
 	self:ScheduleASong(zonetb[current_item])
 	if order_pos == shuffle_order_n then
 		order_pos = 0
+	end
+	if self.idlingzonetimer then
+		self:CancelTimer(self.idlingzonetimer)
+		self.idlingzonetimer = nil
 	end
 end
 
@@ -196,11 +204,10 @@ function RetailZoneMusic:PlayForANewZone(zonetb,subzones)
 	self.currentsubzonetb = subzones
 	if subzones then
 		if self.subzonetimer == nil then
-			self.subzonetimer = self:ScheduleRepeatingTimer("SubZoneTimer",0.2)
+			self.subzonetimer = self:ScheduleRepeatingTimer("SubZoneTimer",0.01)
 		end
-		if self:SUBZONE_CHANGED() then
-			return
-		end
+		self:SUBZONE_CHANGED()
+		return
 	end
 	self:PlayZoneMainRecursive()
 end
@@ -216,11 +223,22 @@ function RetailZoneMusic:SUBZONE_CHANGED()
 	if currentsubzonetext then
 		local val = subzones[currentsubzonetext]
 		if val then
+			if val == true then -- Deal with The Slautered Lamb
+				if self.idlingzonetimer then
+					self:CancelTimer(self.idlingzonetimer)
+					self.idlingzonetimer =nil
+				end		
+			else
+				
+				self.idlingzonetimer = self:ScheduleTimer("PlayZoneMainRecursive",val)
+			end
 			StopMusic()
-			self.idlingzonetimer = self:ScheduleTimer("PlayZoneMainRecursive",val)
 			order_pos = 0
-			return true
+			return
 		end
+	end
+	if self.idlingzonetimer == nil then
+		self:PlayZoneMainRecursive()
 	end
 end
 
