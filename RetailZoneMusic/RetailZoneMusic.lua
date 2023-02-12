@@ -121,6 +121,7 @@ local function wipe(tb)
 end
 
 function RetailZoneMusic:OnInitialize()
+	StopMusic()
 	self:RegisterEvent("ZONE_CHANGED_NEW_AREA","ZONE_CHANGED")
 	self:RegisterEvent("ZONE_CHANGED")
 	self:RegisterEvent("ZONE_CHANGED_INDOORS","ZONE_CHANGED")
@@ -131,7 +132,6 @@ function RetailZoneMusic:OnInitialize()
 	else
 		self.zone_tb_map = zone_tb_map_enus
 	end
-	StopMusic()
 --	self:Print(shuffle_order,order_pos,random,random(1,100),wipe)
 end
 
