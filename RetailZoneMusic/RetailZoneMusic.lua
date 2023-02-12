@@ -244,7 +244,7 @@ function RetailZoneMusic:SUBZONE_CHANGED()
 			return
 		end
 	end
-	if self.timer == nil then
+	if self.timer == nil and self.idlingzonetimer == nil then
 		self:PlayZoneMainRecursive()
 	end
 end
