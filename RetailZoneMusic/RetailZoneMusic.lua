@@ -96,7 +96,7 @@ local zoneid_music_map =
 
 local zone_tb_map_enus =
 {
-["Stormwind City"] = {1519,{["The Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["Cathedral of Light"]=16.358,["The Slaughtered Lamb"]=true}},
+["Stormwind City"] = {1519,{["Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["Cathedral of Light"]=16.358,["The Slaughtered Lamb"]=true}},
 ["Orgrimmar"] = {1637},
 }
 
