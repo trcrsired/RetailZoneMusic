@@ -3,12 +3,13 @@ local AceAddon = LibStub("AceAddon-3.0")
 
 local RetailZoneMusic = AceAddon:NewAddon("RetailZoneMusic","AceEvent-3.0","AceTimer-3.0","AceConsole-3.0")
 local GetZoneText = GetZoneText
+local GetSubZoneText = GetSubZoneText
 
 local zoneid_music_map =
 {
 [1519] =
 {
-[0]={"",66.855}, -- "sound\\music\\citymusic\\stormwind\\stormwind_intro-moment.mp3"
+{"sound\\music\\citymusic\\stormwind\\stormwind_intro-moment.mp3",66.855}, -- "sound\\music\\citymusic\\stormwind\\stormwind_intro-moment.mp3"
 {"sound\\music\\citymusic\\stormwind\\stormwind_highseas-moment.mp3",133.174},
 {"sound\\music\\citymusic\\stormwind\\stormwind01-moment.mp3",54.911},
 {"sound\\music\\citymusic\\stormwind\\stormwind02-moment.mp3",35.658},
@@ -52,7 +53,7 @@ local zoneid_music_map =
 },
 [1637] =
 {
-[0]={"",40.288}, --sound\\music\\citymusic\\orgrimmar\\orgrimmar_intro-moment.mp3
+{"sound\\music\\citymusic\\orgrimmar\\orgrimmar_intro-moment.mp3",40.288}, --sound\\music\\citymusic\\orgrimmar\\orgrimmar_intro-moment.mp3
 {"sound\\music\\citymusic\\orgrimmar\\orgrimmar01-moment.mp3",68.991},
 {"sound\\music\\citymusic\\orgrimmar\\orgrimmar01-zone.mp3",68.943},
 {"sound\\music\\citymusic\\orgrimmar\\orgrimmar02-moment.mp3",62.386},
@@ -87,14 +88,14 @@ local zoneid_music_map =
 
 local zone_tb_map_enus =
 {
-["Stormwind City"] = 1519,
-["Orgrimmar"] = 1637,
+["Stormwind City"] = {1519,{["The Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45}},
+["Orgrimmar"] = {1637},
 }
 
 local zone_tb_map_zhcn =
 {
-["暴风城"] = 1519,
-["奥格瑞玛"] = 1637,
+["暴风城"] = {1519},
+["奥格瑞玛"] = {1637},
 }
 
 
@@ -112,8 +113,9 @@ local function wipe(tb)
 end
 
 function RetailZoneMusic:OnInitialize()
-	self:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+	self:RegisterEvent("ZONE_CHANGED_NEW_AREA","ZONE_CHANGED")
 	self:RegisterEvent("ZONE_CHANGED")
+	self:RegisterEvent("ZONE_CHANGED_INDOORS","ZONE_CHANGED")
 	self:RegisterEvent("PLAYER_ENTERING_WORLD","ZONE_CHANGED")
 	local locl = GetLocale()
 	if locl == "zhCN" then
@@ -142,15 +144,18 @@ local function shuffle_order_playlist_n(tb)
 end
 
 function RetailZoneMusic:ScheduleASong(zi)
-	self:CancelAllTimers()
+	if self.timer then
+		self:CancelTimer(self.timer)
+		self.timer = nil
+	end
 	local duration = zi[2]
 	if duration > 2 then
 		duration = duration - 2
 	else
 		duration = 0
 	end
-	self:ScheduleTimer("PlayZoneMainRecursive",duration)
-	if zi[1]~="" then
+	self.timer = self:ScheduleTimer("PlayZoneMainRecursive",duration)
+	if zi[0] == nil then
 		PlayMusic(zi[1])
 	end
 end
@@ -168,40 +173,66 @@ function RetailZoneMusic:PlayZoneMainRecursive()
 	end
 end
 
+
 function RetailZoneMusic:StopRetailZoneMusic()
 	self:CancelAllTimers()
 	self.currentzonetb = nil
 	wipe(shuffle_order)
 	order_pos = 0
 	shuffle_order_n = 0
+	self.lastsubzonename = nil
+	self.subzonetimer = nil
+	self.timer = nil
+	self.currentsubzonetb = nil
 	StopMusic()
 end
 
-function RetailZoneMusic:PlayForANewZone(zonetb,prepareentry)
+function RetailZoneMusic:PlayForANewZone(zonetb,subzones)
 	if zonetb == self.currentzonetb then
 		return
 	end
 	self:StopRetailZoneMusic()
 	self.currentzonetb = zonetb
-	if prepareentry then
-		local ztb0 = zonetb[0]
-		if ztb0 then
-			self:ScheduleASong(ztb0)
+	self.currentsubzonetb = subzones
+	if subzones then
+		if self.subzonetimer == nil then
+			self.subzonetimer = self:ScheduleRepeatingTimer("SubZoneTimer",0.2)
+		end
+		if self:SUBZONE_CHANGED() then
 			return
 		end
 	end
 	self:PlayZoneMainRecursive()
 end
 
-function RetailZoneMusic:ZONE_CHANGED_COMMON(prepareentry)
+function RetailZoneMusic:SUBZONE_CHANGED()
+	local zonetext = GetZoneText()
+	local currentsubzonetext = GetSubZoneText()
+	if zonetext == nil or currentsubzonetext == nil then
+		return
+	end
+	local subzones = self.currentsubzonetb
+	self.lastsubzonename = currentsubzonetext
+	if currentsubzonetext then
+		local val = subzones[currentsubzonetext]
+		if val then
+			StopMusic()
+			self.idlingzonetimer = self:ScheduleTimer("PlayZoneMainRecursive",val)
+			order_pos = 0
+			return true
+		end
+	end
+end
+
+function RetailZoneMusic:ZONE_CHANGED()
 	local zonetext = GetZoneText()
 	if zonetext then
 		local zone_tb_map = self.zone_tb_map
-		local zoneid = zone_tb_map[zonetext]
-		if zoneid then
-			local ztb = zoneid_music_map[zoneid]
+		local zoneidtb = zone_tb_map[zonetext]
+		if zoneidtb then
+			local ztb = zoneid_music_map[zoneidtb[1]]
 			if ztb then
-				self:PlayForANewZone(ztb,prepareentry)
+				self:PlayForANewZone(ztb,zoneidtb[2])
 				return
 			end
 		end
@@ -209,10 +240,10 @@ function RetailZoneMusic:ZONE_CHANGED_COMMON(prepareentry)
 	self:StopRetailZoneMusic()
 end
 
-function RetailZoneMusic:ZONE_CHANGED_NEW_AREA()
-	self:ZONE_CHANGED_COMMON(true)
-end
-
-function RetailZoneMusic:ZONE_CHANGED()
-	self:ZONE_CHANGED_COMMON(false)
+function RetailZoneMusic:SubZoneTimer()
+	local subzonetext = GetSubZoneText()
+	if subzonetext ~= self.lastsubzonename then
+		self.lastsubzonename = subzonetext
+		self:SUBZONE_CHANGED()
+	end
 end
