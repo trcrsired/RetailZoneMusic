@@ -153,8 +153,8 @@ function RetailZoneMusic:ScheduleASong(zi)
 		self.timer = nil
 	end
 	local duration = zi[2]
-	if duration > 3 then
-		duration = duration - 3
+	if duration > 2 then
+		duration = duration - 2
 	else
 		duration = 0
 	end
