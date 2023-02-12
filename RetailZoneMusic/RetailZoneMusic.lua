@@ -24,6 +24,9 @@ local zoneid_music_map =
 {"sound\\music\\citymusic\\darnassus\\darnassus walking 1.mp3",85.075}, -- The Park
 {"sound\\music\\citymusic\\darnassus\\darnassus walking 2.mp3",69.558},
 {"sound\\music\\citymusic\\darnassus\\darnassus walking 3.mp3",67.703},
+{"sound\\music\\musical moments\\magic\\magic01-moment.mp3",64.083}, -- Wizard's Sanctum
+{"sound\\music\\musical moments\\magic\\magic01-zone1.mp3",33.337},
+{"sound\\music\\musical moments\\magic\\magic01-zone2.mp3",39.450},
 {"sound\\music\\cataclysm\\mus_stormwind_gu01.mp3",73.262},
 {"sound\\music\\cataclysm\\mus_stormwind_gu02.mp3",38.342},
 {"sound\\music\\cataclysm\\mus_stormwind_gu03.mp3",116.342},
@@ -128,6 +131,7 @@ function RetailZoneMusic:OnInitialize()
 	else
 		self.zone_tb_map = zone_tb_map_enus
 	end
+	StopMusic()
 --	self:Print(shuffle_order,order_pos,random,random(1,100),wipe)
 end
 
