@@ -209,7 +209,7 @@ function RetailZoneMusic:PlayForANewZone(zonetb,subzones)
 	self.currentsubzonetb = subzones
 	if subzones then
 		if self.subzonetimer == nil then
-			self.subzonetimer = self:ScheduleRepeatingTimer("SubZoneTimer",0.01)
+			self.subzonetimer = self:ScheduleRepeatingTimer("SubZoneTimer",0.05)
 		end
 		self:SUBZONE_CHANGED()
 		return
