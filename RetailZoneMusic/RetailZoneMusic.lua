@@ -19,6 +19,7 @@ local zoneid_music_map =
 {"sound\\music\\citymusic\\stormwind\\stormwind06-zone.mp3",53.761},
 {"sound\\music\\citymusic\\stormwind\\stormwind07-zone.mp3",87.094},
 {"sound\\music\\citymusic\\stormwind\\stormwind08-zone.mp3",77.369},
+{"sound\\music\\musical moments\\sacred\\sacred01.mp3",16.358}, -- Cathedral of Light
 {"sound\\music\\musical moments\\sacred\\sacred02.mp3",19.154}, -- Cathedral Square
 {"sound\\music\\citymusic\\darnassus\\darnassus walking 1.mp3",85.075}, -- The Park
 {"sound\\music\\citymusic\\darnassus\\darnassus walking 2.mp3",69.558},
@@ -92,7 +93,7 @@ local zoneid_music_map =
 
 local zone_tb_map_enus =
 {
-["Stormwind City"] = {1519,{["The Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["The Slaughtered Lamb"]=true}},
+["Stormwind City"] = {1519,{["The Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["Cathedral of Light"]=16.358,["The Slaughtered Lamb"]=true}},
 ["Orgrimmar"] = {1637},
 }
 
@@ -232,12 +233,16 @@ function RetailZoneMusic:SUBZONE_CHANGED()
 				
 				self.idlingzonetimer = self:ScheduleTimer("PlayZoneMainRecursive",val)
 			end
+			if self.timer then
+				self:CancelTimer(self.timer)
+				self.timer = nil
+			end
 			StopMusic()
 			order_pos = 0
 			return
 		end
 	end
-	if self.idlingzonetimer == nil then
+	if self.timer == nil then
 		self:PlayZoneMainRecursive()
 	end
 end
