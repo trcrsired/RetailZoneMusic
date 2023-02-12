@@ -96,13 +96,13 @@ local zoneid_music_map =
 
 local zone_tb_map_enus =
 {
-["Stormwind City"] = {1519,{["Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["Cathedral of Light"]=16.358,["The Slaughtered Lamb"]=true}},
+["Stormwind City"] = {1519,{[""]=66.855,["Valley of Heroes"]=66.855,["Cathedral Square"]=19.154,["Stormwind Keep"]=45,["Cathedral of Light"]=16.358,["The Slaughtered Lamb"]=true}},
 ["Orgrimmar"] = {1637},
 }
 
 local zone_tb_map_zhcn =
 {
-["暴风城"] = {1519},
+["暴风城"] = {1519,{[""]=66.855,["英雄谷"]=66.855,["教堂广场"]=19.154,["暴风要塞"]=45,["光明大教堂"]=16.358,["待宰的羔羊"]=true}},
 ["奥格瑞玛"] = {1637},
 }
 
@@ -132,7 +132,6 @@ function RetailZoneMusic:OnInitialize()
 	else
 		self.zone_tb_map = zone_tb_map_enus
 	end
---	self:Print(shuffle_order,order_pos,random,random(1,100),wipe)
 end
 
 local function shuffle_order_playlist_n(tb)
@@ -234,7 +233,6 @@ function RetailZoneMusic:SUBZONE_CHANGED()
 					self.idlingzonetimer =nil
 				end		
 			else
-				
 				self.idlingzonetimer = self:ScheduleTimer("PlayZoneMainRecursive",val)
 			end
 			if self.timer then
